@@ -6,20 +6,25 @@ const dev = {
     input: 'src/index.js',
     output: {
         name: 'Gantt',
-        file: 'dist/frappe-gantt.js',
+        file: '../../../../www/js/frappe-gantt.js',
         format: 'iife'
     },
     plugins: [
         sass({
-            output: 'dist/frappe-gantt.css'
+            output: '../../../../www/css/frappe-gantt.css'
         })
     ]
 };
 const prod = merge(dev, {
     output: {
-        file: 'dist/frappe-gantt.min.js'
+        file: '../../../../www/js/frappe-gantt.min.js'
     },
-    plugins: [uglify()]
+    plugins: [
+        uglify(),
+        sass({
+            output: '../../../../www/css/frappe-gantt.css'
+        })
+    ]
 });
 
 export default [dev, prod];

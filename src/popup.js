@@ -1,5 +1,6 @@
 export default class Popup {
-    constructor(parent, custom_html) {
+    constructor(gantt, parent, custom_html) {
+        this.gantt = gantt;
         this.parent = parent;
         this.custom_html = custom_html;
         this.make();
@@ -9,6 +10,7 @@ export default class Popup {
         this.parent.innerHTML = `
             <div class="title"></div>
             <div class="subtitle"></div>
+            <div class="actions"><button class="delete">Delete</button></div>
             <div class="pointer"></div>
         `;
 
@@ -17,9 +19,22 @@ export default class Popup {
         this.title = this.parent.querySelector('.title');
         this.subtitle = this.parent.querySelector('.subtitle');
         this.pointer = this.parent.querySelector('.pointer');
+        this.delete = this.parent.querySelector('.delete');
     }
 
     show(options) {
+        let me = this;
+        this.parent.setAttribute("id", options.task.id);
+        this.delete.addEventListener("click", function (e) {
+            if (me.parent.id == options.task.id) {
+                me.gantt.hide_popup();
+                me.gantt.trigger_event('task_delete', [
+                    options.task
+                ]);
+                me.gantt.refresh(me.gantt.tasks.filter(x => x.id != options.task.id));
+            }
+        });
+
         if (!options.target_element) {
             throw new Error('target_element is required to show popup');
         }

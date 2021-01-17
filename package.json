@@ -39,6 +39,7 @@
     "prettier": "1.10.2",
     "rollup": "^0.55.3",
     "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-scss": "^2.6.1",
     "rollup-plugin-uglify": "^3.0.0"
   },
   "eslintIgnore": [
