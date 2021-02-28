@@ -32,8 +32,12 @@ export default class Bar {
         this.width = this.gantt.options.column_width * this.duration;
         this.progress_width =
             this.gantt.options.column_width *
-                this.duration *
-                (this.task.progress / 100) || 0;
+            this.duration *
+            (this.task.progress / 100) || 0;
+        this.estimated_width =
+            this.gantt.options.column_width *
+            this.duration *
+            (this.task.estimation / 100) || 0;
         this.group = createSVG('g', {
             class: 'bar-wrapper ' + (this.task.custom_class || ''),
             'data-id': this.task.id
@@ -49,19 +53,19 @@ export default class Bar {
     }
 
     prepare_helpers() {
-        SVGElement.prototype.getX = function() {
+        SVGElement.prototype.getX = function () {
             return +this.getAttribute('x');
         };
-        SVGElement.prototype.getY = function() {
+        SVGElement.prototype.getY = function () {
             return +this.getAttribute('y');
         };
-        SVGElement.prototype.getWidth = function() {
+        SVGElement.prototype.getWidth = function () {
             return +this.getAttribute('width');
         };
-        SVGElement.prototype.getHeight = function() {
+        SVGElement.prototype.getHeight = function () {
             return +this.getAttribute('height');
         };
-        SVGElement.prototype.getEndX = function() {
+        SVGElement.prototype.getEndX = function () {
             return this.getX() + this.getWidth();
         };
     }
@@ -69,6 +73,7 @@ export default class Bar {
     draw() {
         this.draw_bar();
         this.draw_progress_bar();
+        this.draw_estimated_bar();
         this.draw_label();
         this.draw_resize_handles();
     }
@@ -106,6 +111,22 @@ export default class Bar {
         });
 
         animateSVG(this.$bar_progress, 'width', 0, this.progress_width);
+    }
+
+    draw_estimated_bar() {
+        if (this.invalid) return;
+        this.$bar_estimated = createSVG('rect', {
+            x: this.x,
+            y: this.y,
+            width: this.estimated_width,
+            height: this.height,
+            rx: this.corner_radius,
+            ry: this.corner_radius,
+            class: 'bar-expected',
+            append_to: this.bar_group
+        });
+
+        animateSVG(this.$bar_estimated, 'width', 0, this.estimated_width);
     }
 
     draw_label() {
@@ -239,6 +260,7 @@ export default class Bar {
         this.update_handle_position();
         this.update_progressbar_position();
         this.update_arrow_position();
+        this.update_estimatedbar_position();
     }
 
     date_changed() {
@@ -368,6 +390,14 @@ export default class Bar {
         this.$bar_progress.setAttribute(
             'width',
             this.$bar.getWidth() * (this.task.progress / 100)
+        );
+    }
+
+    update_estimatedbar_position() {
+        this.$bar_estimated.setAttribute('x', this.$bar.getX());
+        this.$bar_estimated.setAttribute(
+            'width',
+            this.$bar.getWidth() * (this.task.estimation / 100)
         );
     }
 
